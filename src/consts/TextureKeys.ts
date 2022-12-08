@@ -15,6 +15,7 @@ enum TextureKeys {
   Cloud3 = "cloud3",
   Cat = "Cat",
   Star = "star",
+  Gem = "gem",
 }
 
 export default TextureKeys;

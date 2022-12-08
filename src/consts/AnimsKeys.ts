@@ -6,6 +6,8 @@ enum AnimationKeys {
   MouseDead = "mouse-dead",
   Cat = "Cat",
   Star = "star",
+  Coins = "coins",
+  Gem = "gem",
 }
 
 export default AnimationKeys;

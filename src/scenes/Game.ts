@@ -18,6 +18,7 @@ export default class Game extends Phaser.Scene {
   private cloud3!: Phaser.GameObjects.Image;
   private cat!: Phaser.GameObjects.Sprite;
   private coins!: Phaser.Physics.Arcade.StaticGroup;
+  private gems!: Phaser.Physics.Arcade.StaticGroup;
 
   private laserObstacle!: LaserObstacle;
   private mouse!: RocketMouse;
@@ -76,7 +77,7 @@ export default class Game extends Phaser.Scene {
       .setScrollFactor(0, 0);
 
     this.cat = this.add
-      .sprite(Phaser.Math.Between(200, 700), 567, TextureKeys.Cat)
+      .sprite(Phaser.Math.Between(200, 700), 557, TextureKeys.Cat)
       .play(AnimationKeys.Cat)
       .setOrigin(0, 0)
       .setScale(2, 2);
@@ -123,11 +124,12 @@ export default class Game extends Phaser.Scene {
 
     //add collectibles
     this.coins = this.physics.add.staticGroup();
+    this.gems = this.physics.add.staticGroup();
 
     //add player sprite
     this.mouse = new RocketMouse(this, width * 0.3, height - 30);
     this.add.existing(this.mouse);
-    this.mouse.setVisible(false);
+    // this.mouse.setVisible(false);
 
     const body = this.mouse.body as Phaser.Physics.Arcade.Body;
     body.setCollideWorldBounds(true);
@@ -145,6 +147,13 @@ export default class Game extends Phaser.Scene {
       this.coins,
       this.mouse,
       this.handleCollectCoin,
+      undefined,
+      this
+    );
+    this.physics.add.overlap(
+      this.gems,
+      this.mouse,
+      this.handleCollectGem,
       undefined,
       this
     );
@@ -184,6 +193,7 @@ export default class Game extends Phaser.Scene {
 
     if (this.building1.x + this.building1.width < scrollX) {
       this.building1.x = Phaser.Math.Between(rightEdge + 300, rightEdge + 1000);
+      this.spawnGems();
 
       const overlapBookcase = this.bookcases.find((bc) => {
         return Math.abs(this.building1.x - bc.x) <= this.building1.width;
@@ -323,6 +333,11 @@ export default class Game extends Phaser.Scene {
     mouse.kill();
   }
 
+  private randomCoinFormation() {
+    let formations = [100, 200, 300, 400];
+    return formations[Math.floor(Math.random() * formations.length)];
+  }
+
   private spawnCoins() {
     this.coins.children.each((child) => {
       const coin = child as Phaser.Physics.Arcade.Sprite;
@@ -341,20 +356,22 @@ export default class Game extends Phaser.Scene {
       const coin = this.coins.get(
         x,
         // Phaser.Math.Between(100, this.scale.height - 100),
-        300,
+        this.randomCoinFormation(),
         TextureKeys.Coin
       ) as Phaser.Physics.Arcade.Sprite;
 
-      coin.setVisible(true);
-      coin.setActive(true);
-      coin.setScale(1.5, 1.5);
+      coin
+        .setVisible(true)
+        .setActive(true)
+        .play(AnimationKeys.Coins)
+        .setScale(0.25);
 
       const body = coin.body as Phaser.Physics.Arcade.StaticBody;
-      body.setCircle(body.width * 0.5);
+      body.setCircle(body.width * 0.25);
       body.enable = true;
       body.updateFromGameObject();
 
-      x += coin.width * 3.5;
+      x += coin.width * 0.5;
     }
   }
 
@@ -371,6 +388,63 @@ export default class Game extends Phaser.Scene {
     this.coins.killAndHide(coin);
 
     coin.body.enable = false;
+  }
+
+  private randomGemFormation() {
+    let formations = [150, 250, 350, 450];
+    return formations[Math.floor(Math.random() * formations.length)];
+  }
+
+  private spawnGems() {
+    this.gems.children.each((child) => {
+      const gem = child as Phaser.Physics.Arcade.Sprite;
+      this.coins.killAndHide(gem);
+      gem.body.enable = false;
+    });
+
+    const scrollX = this.cameras.main.scrollX;
+    const rightEdge = scrollX + this.scale.width;
+
+    let x = rightEdge + 100;
+
+    const numGems = Phaser.Math.Between(1, 2);
+
+    for (let i = 0; i < numGems; i++) {
+      const gem = this.gems.get(
+        x,
+        // Phaser.Math.Between(100, this.scale.height - 100),
+        this.randomGemFormation(),
+        TextureKeys.Gem
+      ) as Phaser.Physics.Arcade.Sprite;
+
+      gem
+        .setVisible(true)
+        .setActive(true)
+        .play(AnimationKeys.Gem)
+        .setScale(2, 2);
+
+      const body = gem.body as Phaser.Physics.Arcade.StaticBody;
+      body.setCircle(body.width * 0.5);
+      body.enable = true;
+      body.updateFromGameObject();
+
+      x += gem.width * 3.5;
+    }
+  }
+
+  private handleCollectGem(
+    _obj1: Phaser.GameObjects.GameObject,
+    obj2: Phaser.GameObjects.GameObject
+  ) {
+    const gem = obj2 as Phaser.Physics.Arcade.Sprite;
+
+    this.score += 10;
+
+    this.scoreLabel.text = `Score: ${this.score}`;
+
+    this.gems.killAndHide(gem);
+
+    gem.body.enable = false;
   }
 
   private teleportBackwards() {

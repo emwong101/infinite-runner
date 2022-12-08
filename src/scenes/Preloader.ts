@@ -28,8 +28,6 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(TextureKeys.LaserMiddle, "/house/object_laser.png");
     this.load.image(TextureKeys.LaserEnd, "/house/object_laser_end.png");
 
-    this.load.image(TextureKeys.Coin, "/house/Coin.png");
-
     this.load.atlas(
       TextureKeys.Mouse,
       "characters/rocket-mouse.png",
@@ -38,12 +36,22 @@ export default class Preloader extends Phaser.Scene {
 
     this.load.spritesheet(TextureKeys.Cat, "/house/Cat.png", {
       frameWidth: 32,
-      frameHeight: 27,
+      frameHeight: 32,
     });
 
     this.load.spritesheet(TextureKeys.Star, "/house/stars.png", {
       frameWidth: 32,
       frameHeight: 32,
+    });
+
+    this.load.spritesheet(TextureKeys.Coin, "/house/01coin.png", {
+      frameWidth: 120,
+      frameHeight: 120,
+    });
+
+    this.load.spritesheet(TextureKeys.Gem, "/house/Gem.png", {
+      frameWidth: 16,
+      frameHeight: 16,
     });
   }
 
@@ -114,6 +122,27 @@ export default class Preloader extends Phaser.Scene {
       frameRate: 7,
       repeat: -1,
       yoyo: true,
+    });
+
+    this.anims.create({
+      key: AnimationKeys.Coins,
+      frames: this.anims.generateFrameNumbers(TextureKeys.Coin, {
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: AnimationKeys.Gem,
+      frames: this.anims.generateFrameNumbers(TextureKeys.Gem, {
+        start: 0,
+        end: 5,
+      }),
+      repeat: -1,
+      yoyo: true,
+      frameRate: 15,
     });
 
     this.scene.start(SceneKeys.Game);
