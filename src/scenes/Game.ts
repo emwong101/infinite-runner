@@ -3,7 +3,7 @@ import AnimationKeys from "../consts/AnimsKeys";
 import SceneKeys from "../consts/SceneKeys";
 import TextureKeys from "../consts/TextureKeys";
 import LaserObstacle from "../game/LaserObstacle";
-import RocketMouse from "../game/RocketMouse";
+import GameSprite from "../game/RocketMouse";
 
 export default class Game extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
@@ -21,7 +21,7 @@ export default class Game extends Phaser.Scene {
   private gems!: Phaser.Physics.Arcade.StaticGroup;
 
   private laserObstacle!: LaserObstacle;
-  private mouse!: RocketMouse;
+  private gameSprite!: GameSprite;
 
   private bookcases: Phaser.GameObjects.Image[] = [];
   private windows: Phaser.GameObjects.Image[] = [];
@@ -50,23 +50,23 @@ export default class Game extends Phaser.Scene {
 
     //add background decorations
     this.building1 = this.add
-      .image(Phaser.Math.Between(900, 1500), 605, TextureKeys.Building1)
+      .image(Phaser.Math.Between(900, 1500), 610, TextureKeys.Building1)
       .setOrigin(0.5, 1);
 
     this.window1 = this.add
-      .image(Phaser.Math.Between(900, 1300), 605, TextureKeys.Window1)
+      .image(Phaser.Math.Between(900, 1300), 610, TextureKeys.Window1)
       .setOrigin(0.5, 1);
     this.window2 = this.add
-      .image(Phaser.Math.Between(1600, 2000), 605, TextureKeys.Window2)
+      .image(Phaser.Math.Between(1600, 2000), 610, TextureKeys.Window2)
       .setOrigin(0.5, 1);
 
     this.windows = [this.window1, this.window2];
 
     this.bookcase1 = this.add
-      .image(Phaser.Math.Between(2200, 2700), 605, TextureKeys.Bookcase1)
+      .image(Phaser.Math.Between(2200, 2700), 610, TextureKeys.Bookcase1)
       .setOrigin(0.5, 1);
     this.bookcase2 = this.add
-      .image(Phaser.Math.Between(2900, 3200), 605, TextureKeys.Bookcase2)
+      .image(Phaser.Math.Between(2900, 3200), 610, TextureKeys.Bookcase2)
       .setOrigin(0.5, 1);
 
     this.bookcases = [this.bookcase1, this.bookcase2];
@@ -75,12 +75,6 @@ export default class Game extends Phaser.Scene {
       .tileSprite(0, 0, width, height, TextureKeys.Floor)
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
-
-    this.cat = this.add
-      .sprite(Phaser.Math.Between(200, 700), 557, TextureKeys.Cat)
-      .play(AnimationKeys.Cat)
-      .setOrigin(0, 0)
-      .setScale(2, 2);
 
     //add background animated stars
     this.add
@@ -127,32 +121,39 @@ export default class Game extends Phaser.Scene {
     this.gems = this.physics.add.staticGroup();
 
     //add player sprite
-    this.mouse = new RocketMouse(this, width * 0.3, height - 30);
-    this.add.existing(this.mouse);
-    // this.mouse.setVisible(false);
+    this.gameSprite = new GameSprite(this, width * 0.3, height - 30);
+    this.add.existing(this.gameSprite);
+    // this.gameSprite.setVisible(false);
 
-    const body = this.mouse.body as Phaser.Physics.Arcade.Body;
+    //animated cat in foreground
+    this.cat = this.add
+      .sprite(Phaser.Math.Between(200, 700), 550, TextureKeys.Cat)
+      .play(AnimationKeys.Cat)
+      .setOrigin(0, 0)
+      .setScale(2.5, 2.5);
+
+    const body = this.gameSprite.body as Phaser.Physics.Arcade.Body;
     body.setCollideWorldBounds(true);
     body.setVelocityX(200);
 
     //detect overlap between player and interactive objects
     this.physics.add.overlap(
       this.laserObstacle,
-      this.mouse,
+      this.gameSprite,
       this.handleOverlapLaser,
       undefined,
       this
     );
     this.physics.add.overlap(
       this.coins,
-      this.mouse,
+      this.gameSprite,
       this.handleCollectCoin,
       undefined,
       this
     );
     this.physics.add.overlap(
       this.gems,
-      this.mouse,
+      this.gameSprite,
       this.handleCollectGem,
       undefined,
       this
@@ -160,7 +161,7 @@ export default class Game extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height - 55);
 
-    this.cameras.main.startFollow(this.mouse);
+    this.cameras.main.startFollow(this.gameSprite);
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height);
 
     this.scoreLabel = this.add
@@ -328,9 +329,9 @@ export default class Game extends Phaser.Scene {
     _obj1: Phaser.GameObjects.GameObject,
     obj2: Phaser.GameObjects.GameObject
   ) {
-    const mouse = obj2 as RocketMouse;
+    const gameSprite = obj2 as GameSprite;
 
-    mouse.kill();
+    gameSprite.kill();
   }
 
   private randomCoinFormation() {
@@ -364,7 +365,7 @@ export default class Game extends Phaser.Scene {
         .setVisible(true)
         .setActive(true)
         .play(AnimationKeys.Coins)
-        .setScale(0.25);
+        .setScale(0.3);
 
       const body = coin.body as Phaser.Physics.Arcade.StaticBody;
       body.setCircle(body.width * 0.25);
@@ -452,7 +453,7 @@ export default class Game extends Phaser.Scene {
     const maxX = 6800;
 
     if (scrollX > maxX) {
-      this.mouse.x -= maxX;
+      this.gameSprite.x -= maxX;
       this.building1.x -= maxX;
 
       this.windows.forEach((win) => {

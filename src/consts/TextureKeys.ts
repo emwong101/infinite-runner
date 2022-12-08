@@ -1,6 +1,6 @@
 enum TextureKeys {
   Background = "background",
-  Mouse = "mouse",
+  Sprite = "sprite",
   Building1 = "building-1",
   Window1 = "window-1",
   Window2 = "window-2",
@@ -16,6 +16,10 @@ enum TextureKeys {
   Cat = "Cat",
   Star = "star",
   Gem = "gem",
+  Test = "test",
+  TestJump = "test-jump",
+  TestDie = "test-die",
+  Dust = "dust",
 }
 
 export default TextureKeys;
