@@ -32,6 +32,8 @@ export default class StartGame extends Phaser.Scene {
       .setDisplaySize(width, height)
       .play("start");
 
+    this.add.text(480, 610, "Fly using SPACE to collect coins and gems!");
+
     this.input.keyboard.once("keydown-SPACE", () => {
       this.scene.stop(SceneKeys.GameStart);
 
