@@ -40,8 +40,8 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this);
 
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.sprite.width * 0.5, this.sprite.height * 0.7);
-    body.setOffset(this.sprite.width * -0.3, -this.sprite.height + 15);
+    body.setSize(this.sprite.width * 0.5, this.sprite.height * 0.5);
+    body.setOffset(this.sprite.width * -0.2, -this.sprite.height + 35);
 
     this.cursors = scene.input.keyboard.createCursorKeys();
   }
@@ -56,7 +56,7 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
           body.setAccelerationY(-600);
           this.enableJetpack(true);
         } else {
-          body.setAccelerationY(500);
+          body.setAccelerationY(400);
           this.enableJetpack(false);
         }
 
@@ -81,7 +81,7 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
       case SpriteState.Dead: {
         body.setVelocity(0, 0);
 
-        this.scene.scene.run(SceneKeys.GameOver);
+        this.scene.scene.start(SceneKeys.GameOver).isActive;
         break;
       }
     }

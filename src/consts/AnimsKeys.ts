@@ -11,6 +11,9 @@ enum AnimationKeys {
   TestRun = "test-run",
   TestJump = "test-jump",
   Dust = "dust",
+  Laser = "laser",
+  LaserEnds = "laser-ends",
+  Flash = "flash",
 }
 
 export default AnimationKeys;

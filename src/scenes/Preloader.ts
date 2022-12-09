@@ -28,9 +28,6 @@ export default class Preloader extends Phaser.Scene {
     this.load.image(TextureKeys.Cloud2, "/assets/background/Clouds2.png");
     this.load.image(TextureKeys.Cloud3, "/assets/background/Clouds3.png");
 
-    this.load.image(TextureKeys.LaserMiddle, "/assets/object_laser.png");
-    this.load.image(TextureKeys.LaserEnd, "/assets/object_laser_end.png");
-
     this.load.spritesheet(TextureKeys.Cat, "/assets/background/Cat.png", {
       frameWidth: 32,
       frameHeight: 32,
@@ -52,7 +49,7 @@ export default class Preloader extends Phaser.Scene {
     });
 
     this.load.spritesheet(
-      TextureKeys.Test,
+      TextureKeys.Sprite,
       "/characters/Owlet_Monster_Run_6.png",
       {
         frameWidth: 128,
@@ -61,32 +58,54 @@ export default class Preloader extends Phaser.Scene {
     );
 
     this.load.spritesheet(
-      TextureKeys.TestJump,
+      TextureKeys.SpriteJump,
       "/characters/Owlet_Monster_Jump_8.png",
       { frameWidth: 128, frameHeight: 128 }
     );
 
     this.load.spritesheet(
-      TextureKeys.TestDie,
+      TextureKeys.SpriteDie,
       "/characters/Owlet_Monster_Death_8.png",
       { frameWidth: 128, frameHeight: 128 }
     );
 
-    this.load.spritesheet(TextureKeys.Dust, "/assets/burning_loop_1 (2).png", {
-      frameWidth: 100,
-      frameHeight: 133,
-    });
+    this.load.spritesheet(
+      TextureKeys.Flames,
+      "/assets/burning_loop_1 (2).png",
+      {
+        frameWidth: 100,
+        frameHeight: 133,
+      }
+    );
+
+    this.load.spritesheet(
+      "gameOverBackground",
+      "/assets/gameover/gameOverBackground.png",
+      { frameWidth: 400, frameHeight: 320 }
+    );
+
+    this.load.atlas(
+      TextureKeys.AnimLaser,
+      "/assets/obstacles/lightning.png",
+      "/assets/obstacles/lightning.json"
+    );
+
+    this.load.atlas(
+      TextureKeys.AnimLaserEnds,
+      "/assets/obstacles/lightning-ends.png",
+      "assets/obstacles/lightning-ends.json"
+    );
   }
 
   create() {
     this.anims.create({
       key: AnimationKeys.SpriteFall,
-      frames: [{ key: TextureKeys.TestJump, frame: 6 }],
+      frames: [{ key: TextureKeys.SpriteJump, frame: 6 }],
     });
 
     this.anims.create({
       key: AnimationKeys.SpriteFly,
-      frames: [{ key: TextureKeys.TestJump, frame: 3 }],
+      frames: [{ key: TextureKeys.SpriteJump, frame: 3 }],
     });
 
     this.anims.create({
@@ -133,7 +152,7 @@ export default class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: AnimationKeys.SpriteRun,
-      frames: this.anims.generateFrameNumbers(TextureKeys.Test, {
+      frames: this.anims.generateFrameNumbers(TextureKeys.Sprite, {
         start: 0,
         end: 5,
       }),
@@ -143,7 +162,7 @@ export default class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: AnimationKeys.SpriteDead,
-      frames: this.anims.generateFrameNumbers(TextureKeys.TestDie, {
+      frames: this.anims.generateFrameNumbers(TextureKeys.SpriteDie, {
         start: 0,
         end: 7,
       }),
@@ -152,7 +171,7 @@ export default class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: AnimationKeys.RocketFlamesOn,
-      frames: this.anims.generateFrameNumbers(TextureKeys.Dust, {
+      frames: this.anims.generateFrameNumbers(TextureKeys.Flames, {
         start: 0,
         end: 7,
       }),
@@ -161,6 +180,30 @@ export default class Preloader extends Phaser.Scene {
       yoyo: true,
     });
 
-    this.scene.start(SceneKeys.Game);
+    this.anims.create({
+      key: AnimationKeys.Laser,
+      frames: this.anims.generateFrameNames(TextureKeys.AnimLaser, {
+        start: 1,
+        end: 6,
+        prefix: "Explosion_2_",
+        suffix: ".png",
+      }),
+      frameRate: 15,
+      repeat: -1,
+    });
+
+    this.anims.create({
+      key: AnimationKeys.LaserEnds,
+      frames: this.anims.generateFrameNames(TextureKeys.AnimLaserEnds, {
+        start: 1,
+        end: 4,
+        prefix: "Explosion_3_",
+        suffix: ".png",
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    this.scene.start(SceneKeys.GameStart);
   }
 }

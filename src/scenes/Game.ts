@@ -3,7 +3,7 @@ import AnimationKeys from "../consts/AnimsKeys";
 import SceneKeys from "../consts/SceneKeys";
 import TextureKeys from "../consts/TextureKeys";
 import LaserObstacle from "../game/LaserObstacle";
-import GameSprite from "../game/RocketMouse";
+import GameSprite from "../game/SpriteCharacter";
 
 export default class Game extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
@@ -114,7 +114,6 @@ export default class Game extends Phaser.Scene {
     //add obstacles
     this.laserObstacle = new LaserObstacle(this, 900, 100);
     this.add.existing(this.laserObstacle);
-    this.laserObstacle.setVisible(false);
 
     //add collectibles
     this.coins = this.physics.add.staticGroup();
@@ -123,7 +122,10 @@ export default class Game extends Phaser.Scene {
     //add player sprite
     this.gameSprite = new GameSprite(this, width * 0.3, height - 30);
     this.add.existing(this.gameSprite);
-    // this.gameSprite.setVisible(false);
+
+    const body = this.gameSprite.body as Phaser.Physics.Arcade.Body;
+    body.setCollideWorldBounds(true);
+    body.setVelocityX(200);
 
     //animated cat in foreground
     this.cat = this.add
@@ -131,10 +133,6 @@ export default class Game extends Phaser.Scene {
       .play(AnimationKeys.Cat)
       .setOrigin(0, 0)
       .setScale(2.5, 2.5);
-
-    const body = this.gameSprite.body as Phaser.Physics.Arcade.Body;
-    body.setCollideWorldBounds(true);
-    body.setVelocityX(200);
 
     //detect overlap between player and interactive objects
     this.physics.add.overlap(
@@ -159,11 +157,13 @@ export default class Game extends Phaser.Scene {
       this
     );
 
+    //world physics configs and camera movement
     this.physics.world.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height - 55);
 
     this.cameras.main.startFollow(this.gameSprite);
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height);
 
+    //scoreboard
     this.scoreLabel = this.add
       .text(10, 10, `Score: ${this.score}`, {
         fontSize: "24px",
@@ -365,7 +365,7 @@ export default class Game extends Phaser.Scene {
         .setVisible(true)
         .setActive(true)
         .play(AnimationKeys.Coins)
-        .setScale(0.3);
+        .setScale(0.42);
 
       const body = coin.body as Phaser.Physics.Arcade.StaticBody;
       body.setCircle(body.width * 0.25);
@@ -422,7 +422,7 @@ export default class Game extends Phaser.Scene {
         .setVisible(true)
         .setActive(true)
         .play(AnimationKeys.Gem)
-        .setScale(2, 2);
+        .setScale(2.5, 2.5);
 
       const body = gem.body as Phaser.Physics.Arcade.StaticBody;
       body.setCircle(body.width * 0.5);

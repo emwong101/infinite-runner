@@ -6,8 +6,6 @@ enum TextureKeys {
   Window2 = "window-2",
   Bookcase1 = "bookcase-1",
   Bookcase2 = "bookcase-2",
-  LaserMiddle = "laser-middle",
-  LaserEnd = "laser-end",
   Coin = "coin",
   Floor = "floor",
   Cloud1 = "cloud1",
@@ -16,10 +14,11 @@ enum TextureKeys {
   Cat = "Cat",
   Star = "star",
   Gem = "gem",
-  Test = "test",
-  TestJump = "test-jump",
-  TestDie = "test-die",
-  Dust = "dust",
+  SpriteJump = "sprite-jump",
+  SpriteDie = "sprite-die",
+  Flames = "flames",
+  AnimLaser = "animated-laser",
+  AnimLaserEnds = "animated-laser-ends",
 }
 
 export default TextureKeys;
