@@ -25,7 +25,6 @@ export default class Game extends Phaser.Scene {
 
   private bookcases: Phaser.GameObjects.Image[] = [];
   private windows: Phaser.GameObjects.Image[] = [];
-  private clouds: Phaser.GameObjects.Image[] = [];
 
   private scoreLabel!: Phaser.GameObjects.Text;
   private score = 0;
@@ -108,8 +107,6 @@ export default class Game extends Phaser.Scene {
     this.cloud3 = this.add
       .image(Phaser.Math.Between(1000, 1500), 95, TextureKeys.Cloud3)
       .setScrollFactor(0.55, 0);
-
-    this.clouds = [this.cloud1, this.cloud2, this.cloud3];
 
     //add obstacles
     this.laserObstacle = new LaserObstacle(this, 900, 100);
@@ -449,47 +446,47 @@ export default class Game extends Phaser.Scene {
     gem.body.enable = false;
   }
 
-  private teleportBackwards() {
-    const scrollX = this.cameras.main.scrollX;
-    const maxX = 6800;
+  // private teleportBackwards() {
+  //   const scrollX = this.cameras.main.scrollX;
+  //   const maxX = 6800;
 
-    if (scrollX > maxX) {
-      this.gameSprite.x -= maxX;
-      this.building1.x -= maxX;
+  //   if (scrollX > maxX) {
+  //     this.gameSprite.x -= maxX;
+  //     this.building1.x -= maxX;
 
-      this.windows.forEach((win) => {
-        win.x -= maxX;
-      });
+  //     this.windows.forEach((win) => {
+  //       win.x -= maxX;
+  //     });
 
-      this.bookcases.forEach((bc) => {
-        bc.x -= maxX;
-      });
+  //     this.bookcases.forEach((bc) => {
+  //       bc.x -= maxX;
+  //     });
 
-      this.cat.x -= maxX;
+  //     this.cat.x -= maxX;
 
-      this.clouds.forEach((cloud) => {
-        cloud.x -= maxX * 1.25;
-      });
-    }
+  //     this.clouds.forEach((cloud) => {
+  //       cloud.x -= maxX * 1.25;
+  //     });
+  //   }
 
-    this.laserObstacle.x -= maxX;
-    const laserBody = this.laserObstacle
-      .body as Phaser.Physics.Arcade.StaticBody;
+  //   this.laserObstacle.x -= maxX;
+  //   const laserBody = this.laserObstacle
+  //     .body as Phaser.Physics.Arcade.StaticBody;
 
-    laserBody.x -= maxX;
+  //   laserBody.x -= maxX;
 
-    this.spawnCoins();
-    this.coins.children.each((child) => {
-      const coin = child as Phaser.Physics.Arcade.Sprite;
+  //   this.spawnCoins();
+  //   this.coins.children.each((child) => {
+  //     const coin = child as Phaser.Physics.Arcade.Sprite;
 
-      if (!coin.active) {
-        return;
-      }
+  //     if (!coin.active) {
+  //       return;
+  //     }
 
-      coin.x -= maxX;
-      const body = coin.body as Phaser.Physics.Arcade.StaticBody;
+  //     coin.x -= maxX;
+  //     const body = coin.body as Phaser.Physics.Arcade.StaticBody;
 
-      body.updateFromGameObject();
-    });
-  }
+  //     body.updateFromGameObject();
+  //   });
+  // }
 }

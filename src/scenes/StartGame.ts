@@ -7,7 +7,7 @@ export default class StartGame extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet("gameStart", "/assets/gamestart/GameStart.png", {
+    this.load.spritesheet("gameStart", "assets/gamestart/GameStart.png", {
       frameWidth: 576,
       frameHeight: 324,
     });
