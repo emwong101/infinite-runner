@@ -28,6 +28,12 @@ export default class Game extends Phaser.Scene {
 
   private scoreLabel!: Phaser.GameObjects.Text;
   private score = 0;
+  private scoreCoin!: Phaser.GameObjects.Image;
+  private distance!: Phaser.GameObjects.Text;
+  private distanceTracked = 0;
+  private timer!: Phaser.Time.TimerEvent;
+
+  private isRunning = true;
 
   constructor() {
     super(SceneKeys.Game);
@@ -35,6 +41,7 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.score = 0;
+    this.distanceTracked = 0;
   }
 
   create() {
@@ -161,16 +168,31 @@ export default class Game extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height);
 
     //scoreboard
+    this.scoreCoin = this.add
+      .image(35, 35, TextureKeys.Coin)
+      .setScale(0.5, 0.5)
+      .setScrollFactor(0, 0);
+
     this.scoreLabel = this.add
-      .text(10, 10, `Score: ${this.score}`, {
-        fontSize: "32px",
+      .text(this.scoreCoin.width * 0.45, 6, `${this.score}`, {
+        fontSize: "42px",
         strokeThickness: 2,
         color: "#FFFFFF",
-        backgroundColor: "#a9a9a9",
         shadow: { fill: true, blur: 0, offsetY: 0 },
         padding: { left: 15, right: 15, top: 10, bottom: 10 },
       })
       .setScrollFactor(0);
+
+    this.distance = this.add
+      .text(0, 55, ``, {
+        fontSize: "42px",
+        strokeThickness: 2,
+        color: "#FFFFFF",
+        shadow: { fill: true, blur: 0, offsetY: 0 },
+        padding: { left: 15, right: 15, top: 10, bottom: 10 },
+      })
+      .setScrollFactor(0, 0);
+    this.timer = this.time.addEvent({ loop: true });
   }
 
   update(_t: number, _dt: number) {
@@ -182,8 +204,23 @@ export default class Game extends Phaser.Scene {
     this.wrapClouds();
     this.wrapCat();
     this.wrapLaserObstacle();
-
+    this.getTime();
+    this.speedUp();
     // this.teleportBackwards();
+  }
+
+  private getTime() {
+    this.distanceTracked = Math.round(this.timer.getElapsedSeconds() / 0.1);
+    this.distance.setText(`${this.distanceTracked}m`);
+  }
+
+  private speedUp() {
+    if (this.distanceTracked > 100 && this.isRunning === true) {
+      const body = this.gameSprite.body as Phaser.Physics.Arcade.Body;
+      body.setAccelerationX(25);
+      body.setAllowDrag(true);
+      body.setAccelerationY(-1000);
+    }
   }
 
   private wrapBuilding1() {
@@ -328,8 +365,10 @@ export default class Game extends Phaser.Scene {
     obj2: Phaser.GameObjects.GameObject
   ) {
     const gameSprite = obj2 as GameSprite;
-
     gameSprite.kill();
+    this.timer.paused = true;
+    this.isRunning === false;
+    this.timer.reset;
   }
 
   private randomCoinFormation() {
@@ -382,7 +421,7 @@ export default class Game extends Phaser.Scene {
 
     this.score += 1;
 
-    this.scoreLabel.text = `Score: ${this.score}`;
+    this.scoreLabel.text = `${this.score}`;
 
     this.coins.killAndHide(coin);
 
@@ -439,7 +478,7 @@ export default class Game extends Phaser.Scene {
 
     this.score += 10;
 
-    this.scoreLabel.text = `Score: ${this.score}`;
+    this.scoreLabel.text = `${this.score}`;
 
     this.gems.killAndHide(gem);
 

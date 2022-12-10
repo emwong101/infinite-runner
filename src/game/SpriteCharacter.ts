@@ -71,6 +71,7 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
       case SpriteState.Killed: {
         body.velocity.x *= 0.95;
         body.velocity.y = 200;
+        body.setAcceleration(0, 0);
 
         if (body.velocity.x <= 5) {
           this.SpriteState = SpriteState.Dead;
@@ -80,8 +81,11 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
 
       case SpriteState.Dead: {
         body.setVelocity(0, 0);
+        body.setAcceleration(0, 0);
 
-        this.scene.scene.start(SceneKeys.GameOver).isActive;
+        setTimeout(() => {
+          this.scene.scene.start(SceneKeys.GameOver).isActive;
+        }, 500);
         break;
       }
     }
