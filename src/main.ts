@@ -12,7 +12,7 @@ const gameEnd = new GameOver();
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: "app",
-  width: 900,
+  width: 940,
   height: 640,
   physics: {
     default: "arcade",

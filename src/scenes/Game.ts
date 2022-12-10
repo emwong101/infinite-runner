@@ -166,9 +166,10 @@ export default class Game extends Phaser.Scene {
     //scoreboard
     this.scoreLabel = this.add
       .text(10, 10, `Score: ${this.score}`, {
-        fontSize: "24px",
-        color: "#080808",
-        backgroundColor: "#F8E71C",
+        fontSize: "32px",
+        strokeThickness: 2,
+        color: "#FFFFFF",
+        backgroundColor: "#a9a9a9",
         shadow: { fill: true, blur: 0, offsetY: 0 },
         padding: { left: 15, right: 15, top: 10, bottom: 10 },
       })

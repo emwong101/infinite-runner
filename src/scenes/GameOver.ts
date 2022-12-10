@@ -34,7 +34,7 @@ export default class GameOver extends Phaser.Scene {
       .setDisplaySize(width, height)
       .play("flash");
 
-    this.add.text(520, 610, "Press ESCAPE to return to Title Screen");
+    this.add.text(550, 610, "Press ESCAPE to return to Title Screen");
 
     this.input.keyboard.once("keydown-SPACE", () => {
       this.scene.stop(SceneKeys.GameOver);
