@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import AnimationKeys from "../consts/AnimsKeys";
-import SceneKeys from "../consts/SceneKeys";
+// import SceneKeys from "../consts/SceneKeys";
 import TextureKeys from "../consts/TextureKeys";
 
 enum SpriteState {
@@ -83,9 +83,9 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
         body.setVelocity(0, 0);
         body.setAcceleration(0, 0);
 
-        setTimeout(() => {
-          this.scene.scene.start(SceneKeys.GameOver).isActive;
-        }, 500);
+        // setTimeout(() => {
+        //   this.scene.scene.start(SceneKeys.GameOver).isActive;
+        // }, 500);
         break;
       }
     }

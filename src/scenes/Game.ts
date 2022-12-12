@@ -369,6 +369,20 @@ export default class Game extends Phaser.Scene {
     this.timer.paused = true;
     this.isRunning === false;
     this.timer.reset;
+
+    if (this.score > Number(localStorage.getItem("gameHighscore"))) {
+      localStorage.setItem("gameHighscore", String(this.score));
+    }
+
+    if (this.distanceTracked > Number(localStorage.getItem("maxDistance"))) {
+      localStorage.setItem("maxDistance", String(this.distanceTracked));
+    }
+    setTimeout(() => {
+      this.scene.run(SceneKeys.GameOver, {
+        score: this.score,
+        distance: this.distanceTracked,
+      }).isActive;
+    }, 1500);
   }
 
   private randomCoinFormation() {

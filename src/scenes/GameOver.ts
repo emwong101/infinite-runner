@@ -15,7 +15,7 @@ export default class GameOver extends Phaser.Scene {
     );
   }
 
-  create() {
+  create(data: any) {
     const { width, height } = this.scale;
 
     this.anims.create({
@@ -33,6 +33,58 @@ export default class GameOver extends Phaser.Scene {
       .setOrigin(0, 0)
       .setDisplaySize(width, height)
       .play("flash");
+
+    this.add.text(width * 0.1, height * 0.51, `${data.score}`, {
+      fontSize: "42px",
+      strokeThickness: 2,
+      color: "#FFFFFF",
+      shadow: { fill: true, blur: 0, offsetY: 0 },
+      padding: { left: 15, right: 15, top: 10, bottom: 10 },
+    });
+
+    this.add.text(width * 0.1, height * 0.7, `${data.distance}m`, {
+      fontSize: "42px",
+      strokeThickness: 2,
+      color: "#FFFFFF",
+      shadow: { fill: true, blur: 0, offsetY: 0 },
+      padding: { left: 15, right: 15, top: 10, bottom: 10 },
+    });
+
+    this.add.text(
+      width * 0.58,
+      height * 0.51,
+      `${localStorage.getItem("gameHighscore")}`,
+      {
+        fontSize: "42px",
+        strokeThickness: 2,
+        color: "#FFFFFF",
+        shadow: { fill: true, blur: 0, offsetY: 0 },
+        padding: { left: 15, right: 15, top: 10, bottom: 10 },
+      }
+    );
+
+    this.add.text(
+      width * 0.58,
+      height * 0.7,
+      `${localStorage.getItem("maxDistance")}m`,
+      {
+        fontSize: "42px",
+        strokeThickness: 2,
+        color: "#FFFFFF",
+        shadow: { fill: true, blur: 0, offsetY: 0 },
+        padding: { left: 15, right: 15, top: 10, bottom: 10 },
+      }
+    );
+
+    // this.add.text(
+    //   40,
+    //   finalScore.height + 20,
+    //   `Highscore: ${localStorage.getItem("gameHighscore")}`,
+    //   {
+    //     fontSize: "32px",
+    //     color: "#FFFFFF",
+    //   }
+    // );
 
     this.add.text(550, 610, "Press ESCAPE to return to Title Screen");
 
