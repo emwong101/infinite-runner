@@ -1,9 +1,11 @@
+import axios from "axios";
 import Phaser from "phaser";
 import AnimationKeys from "../consts/AnimsKeys";
 import SceneKeys from "../consts/SceneKeys";
 import TextureKeys from "../consts/TextureKeys";
 import LaserObstacle from "../game/LaserObstacle";
 import GameSprite from "../game/SpriteCharacter";
+import { v4 as uuidv4 } from "uuid";
 
 export default class Game extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
@@ -32,6 +34,7 @@ export default class Game extends Phaser.Scene {
   private distance!: Phaser.GameObjects.Text;
   private distanceTracked = 0;
   private timer!: Phaser.Time.TimerEvent;
+  private name = uuidv4();
 
   private isRunning = true;
 
@@ -377,12 +380,18 @@ export default class Game extends Phaser.Scene {
     if (this.distanceTracked > Number(localStorage.getItem("maxDistance"))) {
       localStorage.setItem("maxDistance", String(this.distanceTracked));
     }
+
     setTimeout(() => {
       this.scene.run(SceneKeys.GameOver, {
         score: this.score,
         distance: this.distanceTracked,
-      }).isActive;
+      });
+      this.scene.stop(SceneKeys.Game);
     }, 1500);
+
+    axios.get(
+      `https://www.dreamlo.com/lb/vXHHcGCw6ECN3v8q2ewaOwDZuVTTox4UGp_eXTQHB91Q/add/${this.name}/${this.score}/${this.distanceTracked}`
+    );
   }
 
   private randomCoinFormation() {
@@ -407,7 +416,6 @@ export default class Game extends Phaser.Scene {
     for (let i = 0; i < numCoins; i++) {
       const coin = this.coins.get(
         x,
-        // Phaser.Math.Between(100, this.scale.height - 100),
         this.randomCoinFormation(),
         TextureKeys.Coin
       ) as Phaser.Physics.Arcade.Sprite;
@@ -498,48 +506,4 @@ export default class Game extends Phaser.Scene {
 
     gem.body.enable = false;
   }
-
-  // private teleportBackwards() {
-  //   const scrollX = this.cameras.main.scrollX;
-  //   const maxX = 6800;
-
-  //   if (scrollX > maxX) {
-  //     this.gameSprite.x -= maxX;
-  //     this.building1.x -= maxX;
-
-  //     this.windows.forEach((win) => {
-  //       win.x -= maxX;
-  //     });
-
-  //     this.bookcases.forEach((bc) => {
-  //       bc.x -= maxX;
-  //     });
-
-  //     this.cat.x -= maxX;
-
-  //     this.clouds.forEach((cloud) => {
-  //       cloud.x -= maxX * 1.25;
-  //     });
-  //   }
-
-  //   this.laserObstacle.x -= maxX;
-  //   const laserBody = this.laserObstacle
-  //     .body as Phaser.Physics.Arcade.StaticBody;
-
-  //   laserBody.x -= maxX;
-
-  //   this.spawnCoins();
-  //   this.coins.children.each((child) => {
-  //     const coin = child as Phaser.Physics.Arcade.Sprite;
-
-  //     if (!coin.active) {
-  //       return;
-  //     }
-
-  //     coin.x -= maxX;
-  //     const body = coin.body as Phaser.Physics.Arcade.StaticBody;
-
-  //     body.updateFromGameObject();
-  //   });
-  // }
 }

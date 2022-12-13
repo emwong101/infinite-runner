@@ -76,17 +76,12 @@ export default class GameOver extends Phaser.Scene {
       }
     );
 
-    // this.add.text(
-    //   40,
-    //   finalScore.height + 20,
-    //   `Highscore: ${localStorage.getItem("gameHighscore")}`,
-    //   {
-    //     fontSize: "32px",
-    //     color: "#FFFFFF",
-    //   }
-    // );
-
-    this.add.text(550, 610, "Press ESCAPE to return to Title Screen");
+    const title = this.add.text(20, 610, "ESCAPE to return to Title Screen");
+    this.add.text(
+      title.x + title.width + 20,
+      title.y,
+      "ENTER for global leaderboard"
+    );
 
     this.input.keyboard.once("keydown-SPACE", () => {
       this.scene.stop(SceneKeys.GameOver);
@@ -100,6 +95,13 @@ export default class GameOver extends Phaser.Scene {
 
       this.scene.stop(SceneKeys.GameStart);
       this.scene.start(SceneKeys.GameStart);
+    });
+
+    this.input.keyboard.once("keydown-ENTER", () => {
+      this.scene.stop(SceneKeys.GameOver);
+
+      this.scene.stop(SceneKeys.Leaderboard);
+      this.scene.start(SceneKeys.Leaderboard);
     });
   }
 }

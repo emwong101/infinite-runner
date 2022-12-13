@@ -14,6 +14,7 @@ enum AnimationKeys {
   Laser = "laser",
   LaserEnds = "laser-ends",
   Flash = "flash",
+  Start = "game-start",
 }
 
 export default AnimationKeys;

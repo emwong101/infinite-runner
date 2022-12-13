@@ -19,6 +19,7 @@ enum TextureKeys {
   Flames = "flames",
   AnimLaser = "animated-laser",
   AnimLaserEnds = "animated-laser-ends",
+  Start = "game-start",
 }
 
 export default TextureKeys;

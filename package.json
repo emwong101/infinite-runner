@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "eslint": "^8.25.0",
@@ -16,8 +17,12 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "axios": "^1.2.1",
+    "cors": "^2.8.5",
     "firebase": "^9.15.0",
+    "firebase-admin": "^11.3.0",
     "phaser": "^3.55.2",
-    "phaser3-rex-plugins": "^1.1.77"
+    "phaser3-rex-plugins": "^1.1.77",
+    "uuid": "^9.0.0"
   }
 }

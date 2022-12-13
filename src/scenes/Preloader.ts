@@ -77,6 +77,11 @@ export default class Preloader extends Phaser.Scene {
       { frameWidth: 400, frameHeight: 320 }
     );
 
+    this.load.spritesheet(TextureKeys.Start, "assets/gamestart/GameStart.png", {
+      frameWidth: 576,
+      frameHeight: 324,
+    });
+
     this.load.atlas(
       TextureKeys.AnimLaser,
       "assets/obstacles/lightning.png",
@@ -91,6 +96,16 @@ export default class Preloader extends Phaser.Scene {
   }
 
   create() {
+    this.anims.create({
+      key: AnimationKeys.Start,
+      frames: this.anims.generateFrameNumbers(TextureKeys.Start, {
+        start: 0,
+        end: 6,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
     this.anims.create({
       key: AnimationKeys.SpriteFall,
       frames: [{ key: TextureKeys.SpriteJump, frame: 6 }],
