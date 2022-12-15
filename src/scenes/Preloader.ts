@@ -14,12 +14,12 @@ export default class Preloader extends Phaser.Scene {
 
     this.load.image(TextureKeys.Building1, "assets/background/building1.png");
 
-    this.load.image(TextureKeys.Window1, "assets/background/building2.png");
+    this.load.image(TextureKeys.Building2, "assets/background/building2.png");
 
-    this.load.image(TextureKeys.Window2, "assets/background/building3.png");
+    this.load.image(TextureKeys.Building3, "assets/background/building3.png");
 
-    this.load.image(TextureKeys.Bookcase1, "assets/background/building4.png");
-    this.load.image(TextureKeys.Bookcase2, "assets/background/building5.png");
+    this.load.image(TextureKeys.Building4, "assets/background/building4.png");
+    this.load.image(TextureKeys.Building5, "assets/background/building5.png");
 
     this.load.image(TextureKeys.Cloud1, "assets/background/Clouds1.png");
     this.load.image(TextureKeys.Cloud2, "assets/background/Clouds2.png");

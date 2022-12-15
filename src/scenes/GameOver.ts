@@ -99,6 +99,7 @@ export default class GameOver extends Phaser.Scene {
 
     this.input.keyboard.once("keydown-ENTER", () => {
       this.scene.stop(SceneKeys.GameOver);
+      this.scene.stop(SceneKeys.Game);
 
       this.scene.stop(SceneKeys.Leaderboard);
       this.scene.start(SceneKeys.Leaderboard);

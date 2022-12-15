@@ -11,10 +11,10 @@ export default class Game extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
   private floor!: Phaser.GameObjects.TileSprite;
   private building1!: Phaser.GameObjects.Image;
-  private window1!: Phaser.GameObjects.Image;
-  private window2!: Phaser.GameObjects.Image;
-  private bookcase1!: Phaser.GameObjects.Image;
-  private bookcase2!: Phaser.GameObjects.Image;
+  private building2!: Phaser.GameObjects.Image;
+  private building3!: Phaser.GameObjects.Image;
+  private building4!: Phaser.GameObjects.Image;
+  private building5!: Phaser.GameObjects.Image;
   private cloud1!: Phaser.GameObjects.Image;
   private cloud2!: Phaser.GameObjects.Image;
   private cloud3!: Phaser.GameObjects.Image;
@@ -25,8 +25,8 @@ export default class Game extends Phaser.Scene {
   private laserObstacle!: LaserObstacle;
   private gameSprite!: GameSprite;
 
-  private bookcases: Phaser.GameObjects.Image[] = [];
-  private windows: Phaser.GameObjects.Image[] = [];
+  private buildings: Phaser.GameObjects.Image[] = [];
+  private buildingsList: Phaser.GameObjects.Image[] = [];
 
   private scoreLabel!: Phaser.GameObjects.Text;
   private score = 0;
@@ -62,23 +62,23 @@ export default class Game extends Phaser.Scene {
       .image(Phaser.Math.Between(900, 1500), 610, TextureKeys.Building1)
       .setOrigin(0.5, 1);
 
-    this.window1 = this.add
-      .image(Phaser.Math.Between(900, 1300), 610, TextureKeys.Window1)
+    this.building2 = this.add
+      .image(Phaser.Math.Between(900, 1300), 610, TextureKeys.Building2)
       .setOrigin(0.5, 1);
-    this.window2 = this.add
-      .image(Phaser.Math.Between(1600, 2000), 610, TextureKeys.Window2)
-      .setOrigin(0.5, 1);
-
-    this.windows = [this.window1, this.window2];
-
-    this.bookcase1 = this.add
-      .image(Phaser.Math.Between(2200, 2700), 610, TextureKeys.Bookcase1)
-      .setOrigin(0.5, 1);
-    this.bookcase2 = this.add
-      .image(Phaser.Math.Between(2900, 3200), 610, TextureKeys.Bookcase2)
+    this.building3 = this.add
+      .image(Phaser.Math.Between(1600, 2000), 610, TextureKeys.Building3)
       .setOrigin(0.5, 1);
 
-    this.bookcases = [this.bookcase1, this.bookcase2];
+    this.buildingsList = [this.building2, this.building3];
+
+    this.building4 = this.add
+      .image(Phaser.Math.Between(2200, 2700), 610, TextureKeys.Building4)
+      .setOrigin(0.5, 1);
+    this.building5 = this.add
+      .image(Phaser.Math.Between(2900, 3200), 610, TextureKeys.Building5)
+      .setOrigin(0.5, 1);
+
+    this.buildings = [this.building4, this.building5];
 
     this.floor = this.add
       .tileSprite(0, 0, width, height, TextureKeys.Floor)
@@ -201,7 +201,7 @@ export default class Game extends Phaser.Scene {
   update(_t: number, _dt: number) {
     this.background.setTilePosition(this.cameras.main.scrollX);
     this.floor.setTilePosition(this.cameras.main.scrollX);
-    this.wrapWindows();
+    this.wrapbuildingsList();
     this.wrapBuilding1();
     this.wrapBookcases();
     this.wrapClouds();
@@ -234,11 +234,11 @@ export default class Game extends Phaser.Scene {
       this.building1.x = Phaser.Math.Between(rightEdge + 300, rightEdge + 1000);
       this.spawnGems();
 
-      const overlapBookcase = this.bookcases.find((bc) => {
+      const overlapBookcase = this.buildings.find((bc) => {
         return Math.abs(this.building1.x - bc.x) <= this.building1.width;
       });
 
-      const overlapWindow = this.windows.find((win) => {
+      const overlapWindow = this.buildingsList.find((win) => {
         return Math.abs(this.building1.x - win.x) <= this.building1.width;
       });
 
@@ -247,36 +247,36 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private wrapWindows() {
+  private wrapbuildingsList() {
     const scrollX = this.cameras.main.scrollX;
     const rightEdge = scrollX + this.scale.width;
 
-    let width = this.window1.width * 2;
-    if (this.window1.x + width < scrollX) {
-      this.window1.x = Phaser.Math.Between(
+    let width = this.building2.width * 2;
+    if (this.building2.x + width < scrollX) {
+      this.building2.x = Phaser.Math.Between(
         rightEdge + width,
         rightEdge + width + 500
       );
 
-      const overlap = this.bookcases.find((bc) => {
-        return Math.abs(this.window1.x - bc.x) <= this.window1.width;
+      const overlap = this.buildings.find((bc) => {
+        return Math.abs(this.building2.x - bc.x) <= this.building2.width;
       });
 
-      this.window1.visible = !overlap;
+      this.building2.visible = !overlap;
     }
 
-    width = this.window2.width;
-    if (this.window2.x + width < scrollX) {
-      this.window2.x = Phaser.Math.Between(
-        this.window1.x + width,
-        this.window1.x + width + 800
+    width = this.building3.width;
+    if (this.building3.x + width < scrollX) {
+      this.building3.x = Phaser.Math.Between(
+        this.building2.x + width,
+        this.building2.x + width + 800
       );
 
-      const overlap = this.bookcases.find((bc) => {
-        return Math.abs(this.window2.x - bc.x) <= this.window2.width;
+      const overlap = this.buildings.find((bc) => {
+        return Math.abs(this.building3.x - bc.x) <= this.building3.width;
       });
 
-      this.window2.visible = !overlap;
+      this.building3.visible = !overlap;
     }
   }
 
@@ -284,31 +284,31 @@ export default class Game extends Phaser.Scene {
     const scrollX = this.cameras.main.scrollX;
     const rightEdge = scrollX + this.scale.width;
 
-    let width = this.bookcase1.width * 2;
-    if (this.bookcase1.x + width < scrollX) {
-      this.bookcase1.x = Phaser.Math.Between(
+    let width = this.building4.width * 2;
+    if (this.building4.x + width < scrollX) {
+      this.building4.x = Phaser.Math.Between(
         rightEdge + width,
         rightEdge + width + 800
       );
 
-      const overlap = this.windows.find((win) => {
-        return Math.abs(this.bookcase1.x - win.x) <= this.bookcase1.width;
+      const overlap = this.buildingsList.find((win) => {
+        return Math.abs(this.building4.x - win.x) <= this.building4.width;
       });
 
-      this.bookcase1.visible = !overlap;
+      this.building4.visible = !overlap;
     }
 
-    width = this.bookcase2.width;
-    if (this.bookcase2.x + width < scrollX) {
-      this.bookcase2.x = Phaser.Math.Between(
-        this.bookcase1.x + width,
-        this.bookcase1.x + width + 800
+    width = this.building5.width;
+    if (this.building5.x + width < scrollX) {
+      this.building5.x = Phaser.Math.Between(
+        this.building4.x + width,
+        this.building4.x + width + 800
       );
-      const overlap = this.windows.find((win) => {
-        return Math.abs(this.bookcase2.x - win.x) <= this.bookcase2.width;
+      const overlap = this.buildingsList.find((win) => {
+        return Math.abs(this.building5.x - win.x) <= this.building5.width;
       });
 
-      this.bookcase2.visible = !overlap;
+      this.building5.visible = !overlap;
     }
   }
 
@@ -381,6 +381,13 @@ export default class Game extends Phaser.Scene {
       localStorage.setItem("maxDistance", String(this.distanceTracked));
     }
 
+    const sendScore = () =>
+      axios.get(
+        `https://www.dreamlo.com/lb/vXHHcGCw6ECN3v8q2ewaOwDZuVTTox4UGp_eXTQHB91Q/add/${this.name}/${this.score}/${this.distanceTracked}`
+      );
+
+    sendScore();
+
     setTimeout(() => {
       this.scene.run(SceneKeys.GameOver, {
         score: this.score,
@@ -388,10 +395,6 @@ export default class Game extends Phaser.Scene {
       });
       this.scene.stop(SceneKeys.Game);
     }, 1500);
-
-    axios.get(
-      `https://www.dreamlo.com/lb/vXHHcGCw6ECN3v8q2ewaOwDZuVTTox4UGp_eXTQHB91Q/add/${this.name}/${this.score}/${this.distanceTracked}`
-    );
   }
 
   private randomCoinFormation() {
