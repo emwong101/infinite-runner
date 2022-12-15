@@ -1,33 +1,42 @@
+import axios from "axios";
 import Phaser from "phaser";
 import AnimationKeys from "../consts/AnimsKeys";
 import SceneKeys from "../consts/SceneKeys";
 import TextureKeys from "../consts/TextureKeys";
 import LaserObstacle from "../game/LaserObstacle";
-import RocketMouse from "../game/RocketMouse";
+import GameSprite from "../game/SpriteCharacter";
+import { v4 as uuidv4 } from "uuid";
 
 export default class Game extends Phaser.Scene {
   private background!: Phaser.GameObjects.TileSprite;
   private floor!: Phaser.GameObjects.TileSprite;
   private building1!: Phaser.GameObjects.Image;
-  private window1!: Phaser.GameObjects.Image;
-  private window2!: Phaser.GameObjects.Image;
-  private bookcase1!: Phaser.GameObjects.Image;
-  private bookcase2!: Phaser.GameObjects.Image;
+  private building2!: Phaser.GameObjects.Image;
+  private building3!: Phaser.GameObjects.Image;
+  private building4!: Phaser.GameObjects.Image;
+  private building5!: Phaser.GameObjects.Image;
   private cloud1!: Phaser.GameObjects.Image;
   private cloud2!: Phaser.GameObjects.Image;
   private cloud3!: Phaser.GameObjects.Image;
   private cat!: Phaser.GameObjects.Sprite;
   private coins!: Phaser.Physics.Arcade.StaticGroup;
+  private gems!: Phaser.Physics.Arcade.StaticGroup;
 
   private laserObstacle!: LaserObstacle;
-  private mouse!: RocketMouse;
+  private gameSprite!: GameSprite;
 
-  private bookcases: Phaser.GameObjects.Image[] = [];
-  private windows: Phaser.GameObjects.Image[] = [];
-  private clouds: Phaser.GameObjects.Image[] = [];
+  private buildings: Phaser.GameObjects.Image[] = [];
+  private buildingsList: Phaser.GameObjects.Image[] = [];
 
   private scoreLabel!: Phaser.GameObjects.Text;
   private score = 0;
+  private scoreCoin!: Phaser.GameObjects.Image;
+  private distance!: Phaser.GameObjects.Text;
+  private distanceTracked = 0;
+  private timer!: Phaser.Time.TimerEvent;
+  private name = uuidv4();
+
+  private isRunning = true;
 
   constructor() {
     super(SceneKeys.Game);
@@ -35,6 +44,7 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.score = 0;
+    this.distanceTracked = 0;
   }
 
   create() {
@@ -49,37 +59,31 @@ export default class Game extends Phaser.Scene {
 
     //add background decorations
     this.building1 = this.add
-      .image(Phaser.Math.Between(900, 1500), 605, TextureKeys.Building1)
+      .image(Phaser.Math.Between(900, 1500), 610, TextureKeys.Building1)
       .setOrigin(0.5, 1);
 
-    this.window1 = this.add
-      .image(Phaser.Math.Between(900, 1300), 605, TextureKeys.Window1)
+    this.building2 = this.add
+      .image(Phaser.Math.Between(900, 1300), 610, TextureKeys.Building2)
       .setOrigin(0.5, 1);
-    this.window2 = this.add
-      .image(Phaser.Math.Between(1600, 2000), 605, TextureKeys.Window2)
-      .setOrigin(0.5, 1);
-
-    this.windows = [this.window1, this.window2];
-
-    this.bookcase1 = this.add
-      .image(Phaser.Math.Between(2200, 2700), 605, TextureKeys.Bookcase1)
-      .setOrigin(0.5, 1);
-    this.bookcase2 = this.add
-      .image(Phaser.Math.Between(2900, 3200), 605, TextureKeys.Bookcase2)
+    this.building3 = this.add
+      .image(Phaser.Math.Between(1600, 2000), 610, TextureKeys.Building3)
       .setOrigin(0.5, 1);
 
-    this.bookcases = [this.bookcase1, this.bookcase2];
+    this.buildingsList = [this.building2, this.building3];
+
+    this.building4 = this.add
+      .image(Phaser.Math.Between(2200, 2700), 610, TextureKeys.Building4)
+      .setOrigin(0.5, 1);
+    this.building5 = this.add
+      .image(Phaser.Math.Between(2900, 3200), 610, TextureKeys.Building5)
+      .setOrigin(0.5, 1);
+
+    this.buildings = [this.building4, this.building5];
 
     this.floor = this.add
       .tileSprite(0, 0, width, height, TextureKeys.Floor)
       .setOrigin(0, 0)
       .setScrollFactor(0, 0);
-
-    this.cat = this.add
-      .sprite(Phaser.Math.Between(200, 700), 567, TextureKeys.Cat)
-      .play(AnimationKeys.Cat)
-      .setOrigin(0, 0)
-      .setScale(2, 2);
 
     //add background animated stars
     this.add
@@ -114,68 +118,112 @@ export default class Game extends Phaser.Scene {
       .image(Phaser.Math.Between(1000, 1500), 95, TextureKeys.Cloud3)
       .setScrollFactor(0.55, 0);
 
-    this.clouds = [this.cloud1, this.cloud2, this.cloud3];
-
     //add obstacles
     this.laserObstacle = new LaserObstacle(this, 900, 100);
     this.add.existing(this.laserObstacle);
-    this.laserObstacle.setVisible(false);
 
     //add collectibles
     this.coins = this.physics.add.staticGroup();
+    this.gems = this.physics.add.staticGroup();
 
     //add player sprite
-    this.mouse = new RocketMouse(this, width * 0.3, height - 30);
-    this.add.existing(this.mouse);
-    this.mouse.setVisible(false);
+    this.gameSprite = new GameSprite(this, width * 0.3, height - 30);
+    this.add.existing(this.gameSprite);
 
-    const body = this.mouse.body as Phaser.Physics.Arcade.Body;
+    const body = this.gameSprite.body as Phaser.Physics.Arcade.Body;
     body.setCollideWorldBounds(true);
     body.setVelocityX(200);
+
+    //animated cat in foreground
+    this.cat = this.add
+      .sprite(Phaser.Math.Between(200, 700), 550, TextureKeys.Cat)
+      .play(AnimationKeys.Cat)
+      .setOrigin(0, 0)
+      .setScale(2.5, 2.5);
 
     //detect overlap between player and interactive objects
     this.physics.add.overlap(
       this.laserObstacle,
-      this.mouse,
+      this.gameSprite,
       this.handleOverlapLaser,
       undefined,
       this
     );
     this.physics.add.overlap(
       this.coins,
-      this.mouse,
+      this.gameSprite,
       this.handleCollectCoin,
       undefined,
       this
     );
+    this.physics.add.overlap(
+      this.gems,
+      this.gameSprite,
+      this.handleCollectGem,
+      undefined,
+      this
+    );
 
+    //world physics configs and camera movement
     this.physics.world.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height - 55);
 
-    this.cameras.main.startFollow(this.mouse);
+    this.cameras.main.startFollow(this.gameSprite);
     this.cameras.main.setBounds(0, 0, Number.MAX_SAFE_INTEGER, height);
 
+    //scoreboard
+    this.scoreCoin = this.add
+      .image(35, 35, TextureKeys.Coin)
+      .setScale(0.5, 0.5)
+      .setScrollFactor(0, 0);
+
     this.scoreLabel = this.add
-      .text(10, 10, `Score: ${this.score}`, {
-        fontSize: "24px",
-        color: "#080808",
-        backgroundColor: "#F8E71C",
+      .text(this.scoreCoin.width * 0.45, 6, `${this.score}`, {
+        fontSize: "42px",
+        strokeThickness: 2,
+        color: "#FFFFFF",
         shadow: { fill: true, blur: 0, offsetY: 0 },
         padding: { left: 15, right: 15, top: 10, bottom: 10 },
       })
       .setScrollFactor(0);
+
+    this.distance = this.add
+      .text(0, 55, ``, {
+        fontSize: "42px",
+        strokeThickness: 2,
+        color: "#FFFFFF",
+        shadow: { fill: true, blur: 0, offsetY: 0 },
+        padding: { left: 15, right: 15, top: 10, bottom: 10 },
+      })
+      .setScrollFactor(0, 0);
+    this.timer = this.time.addEvent({ loop: true });
   }
 
   update(_t: number, _dt: number) {
     this.background.setTilePosition(this.cameras.main.scrollX);
     this.floor.setTilePosition(this.cameras.main.scrollX);
-    this.wrapWindows();
+    this.wrapbuildingsList();
     this.wrapBuilding1();
     this.wrapBookcases();
     this.wrapClouds();
     this.wrapCat();
     this.wrapLaserObstacle();
-
+    this.getTime();
+    this.speedUp();
     // this.teleportBackwards();
+  }
+
+  private getTime() {
+    this.distanceTracked = Math.round(this.timer.getElapsedSeconds() / 0.1);
+    this.distance.setText(`${this.distanceTracked}m`);
+  }
+
+  private speedUp() {
+    if (this.distanceTracked > 100 && this.isRunning === true) {
+      const body = this.gameSprite.body as Phaser.Physics.Arcade.Body;
+      body.setAccelerationX(25);
+      body.setAllowDrag(true);
+      body.setAccelerationY(-1000);
+    }
   }
 
   private wrapBuilding1() {
@@ -184,12 +232,13 @@ export default class Game extends Phaser.Scene {
 
     if (this.building1.x + this.building1.width < scrollX) {
       this.building1.x = Phaser.Math.Between(rightEdge + 300, rightEdge + 1000);
+      this.spawnGems();
 
-      const overlapBookcase = this.bookcases.find((bc) => {
+      const overlapBookcase = this.buildings.find((bc) => {
         return Math.abs(this.building1.x - bc.x) <= this.building1.width;
       });
 
-      const overlapWindow = this.windows.find((win) => {
+      const overlapWindow = this.buildingsList.find((win) => {
         return Math.abs(this.building1.x - win.x) <= this.building1.width;
       });
 
@@ -198,36 +247,36 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  private wrapWindows() {
+  private wrapbuildingsList() {
     const scrollX = this.cameras.main.scrollX;
     const rightEdge = scrollX + this.scale.width;
 
-    let width = this.window1.width * 2;
-    if (this.window1.x + width < scrollX) {
-      this.window1.x = Phaser.Math.Between(
+    let width = this.building2.width * 2;
+    if (this.building2.x + width < scrollX) {
+      this.building2.x = Phaser.Math.Between(
         rightEdge + width,
         rightEdge + width + 500
       );
 
-      const overlap = this.bookcases.find((bc) => {
-        return Math.abs(this.window1.x - bc.x) <= this.window1.width;
+      const overlap = this.buildings.find((bc) => {
+        return Math.abs(this.building2.x - bc.x) <= this.building2.width;
       });
 
-      this.window1.visible = !overlap;
+      this.building2.visible = !overlap;
     }
 
-    width = this.window2.width;
-    if (this.window2.x + width < scrollX) {
-      this.window2.x = Phaser.Math.Between(
-        this.window1.x + width,
-        this.window1.x + width + 800
+    width = this.building3.width;
+    if (this.building3.x + width < scrollX) {
+      this.building3.x = Phaser.Math.Between(
+        this.building2.x + width,
+        this.building2.x + width + 800
       );
 
-      const overlap = this.bookcases.find((bc) => {
-        return Math.abs(this.window2.x - bc.x) <= this.window2.width;
+      const overlap = this.buildings.find((bc) => {
+        return Math.abs(this.building3.x - bc.x) <= this.building3.width;
       });
 
-      this.window2.visible = !overlap;
+      this.building3.visible = !overlap;
     }
   }
 
@@ -235,31 +284,31 @@ export default class Game extends Phaser.Scene {
     const scrollX = this.cameras.main.scrollX;
     const rightEdge = scrollX + this.scale.width;
 
-    let width = this.bookcase1.width * 2;
-    if (this.bookcase1.x + width < scrollX) {
-      this.bookcase1.x = Phaser.Math.Between(
+    let width = this.building4.width * 2;
+    if (this.building4.x + width < scrollX) {
+      this.building4.x = Phaser.Math.Between(
         rightEdge + width,
         rightEdge + width + 800
       );
 
-      const overlap = this.windows.find((win) => {
-        return Math.abs(this.bookcase1.x - win.x) <= this.bookcase1.width;
+      const overlap = this.buildingsList.find((win) => {
+        return Math.abs(this.building4.x - win.x) <= this.building4.width;
       });
 
-      this.bookcase1.visible = !overlap;
+      this.building4.visible = !overlap;
     }
 
-    width = this.bookcase2.width;
-    if (this.bookcase2.x + width < scrollX) {
-      this.bookcase2.x = Phaser.Math.Between(
-        this.bookcase1.x + width,
-        this.bookcase1.x + width + 800
+    width = this.building5.width;
+    if (this.building5.x + width < scrollX) {
+      this.building5.x = Phaser.Math.Between(
+        this.building4.x + width,
+        this.building4.x + width + 800
       );
-      const overlap = this.windows.find((win) => {
-        return Math.abs(this.bookcase2.x - win.x) <= this.bookcase2.width;
+      const overlap = this.buildingsList.find((win) => {
+        return Math.abs(this.building5.x - win.x) <= this.building5.width;
       });
 
-      this.bookcase2.visible = !overlap;
+      this.building5.visible = !overlap;
     }
   }
 
@@ -318,9 +367,39 @@ export default class Game extends Phaser.Scene {
     _obj1: Phaser.GameObjects.GameObject,
     obj2: Phaser.GameObjects.GameObject
   ) {
-    const mouse = obj2 as RocketMouse;
+    const gameSprite = obj2 as GameSprite;
+    gameSprite.kill();
+    this.timer.paused = true;
+    this.isRunning === false;
+    this.timer.reset;
 
-    mouse.kill();
+    if (this.score > Number(localStorage.getItem("gameHighscore"))) {
+      localStorage.setItem("gameHighscore", String(this.score));
+    }
+
+    if (this.distanceTracked > Number(localStorage.getItem("maxDistance"))) {
+      localStorage.setItem("maxDistance", String(this.distanceTracked));
+    }
+
+    const sendScore = () =>
+      axios.get(
+        `https://www.dreamlo.com/lb/vXHHcGCw6ECN3v8q2ewaOwDZuVTTox4UGp_eXTQHB91Q/add/${this.name}/${this.score}/${this.distanceTracked}`
+      );
+
+    sendScore();
+
+    setTimeout(() => {
+      this.scene.run(SceneKeys.GameOver, {
+        score: this.score,
+        distance: this.distanceTracked,
+      });
+      this.scene.stop(SceneKeys.Game);
+    }, 1500);
+  }
+
+  private randomCoinFormation() {
+    let formations = [100, 200, 300, 400];
+    return formations[Math.floor(Math.random() * formations.length)];
   }
 
   private spawnCoins() {
@@ -340,21 +419,22 @@ export default class Game extends Phaser.Scene {
     for (let i = 0; i < numCoins; i++) {
       const coin = this.coins.get(
         x,
-        // Phaser.Math.Between(100, this.scale.height - 100),
-        300,
+        this.randomCoinFormation(),
         TextureKeys.Coin
       ) as Phaser.Physics.Arcade.Sprite;
 
-      coin.setVisible(true);
-      coin.setActive(true);
-      coin.setScale(1.5, 1.5);
+      coin
+        .setVisible(true)
+        .setActive(true)
+        .play(AnimationKeys.Coins)
+        .setScale(0.42);
 
       const body = coin.body as Phaser.Physics.Arcade.StaticBody;
-      body.setCircle(body.width * 0.5);
+      body.setCircle(body.width * 0.25);
       body.enable = true;
       body.updateFromGameObject();
 
-      x += coin.width * 3.5;
+      x += coin.width * 0.5;
     }
   }
 
@@ -366,54 +446,67 @@ export default class Game extends Phaser.Scene {
 
     this.score += 1;
 
-    this.scoreLabel.text = `Score: ${this.score}`;
+    this.scoreLabel.text = `${this.score}`;
 
     this.coins.killAndHide(coin);
 
     coin.body.enable = false;
   }
 
-  private teleportBackwards() {
-    const scrollX = this.cameras.main.scrollX;
-    const maxX = 6800;
+  private randomGemFormation() {
+    let formations = [150, 250, 350, 450];
+    return formations[Math.floor(Math.random() * formations.length)];
+  }
 
-    if (scrollX > maxX) {
-      this.mouse.x -= maxX;
-      this.building1.x -= maxX;
-
-      this.windows.forEach((win) => {
-        win.x -= maxX;
-      });
-
-      this.bookcases.forEach((bc) => {
-        bc.x -= maxX;
-      });
-
-      this.cat.x -= maxX;
-
-      this.clouds.forEach((cloud) => {
-        cloud.x -= maxX * 1.25;
-      });
-    }
-
-    this.laserObstacle.x -= maxX;
-    const laserBody = this.laserObstacle
-      .body as Phaser.Physics.Arcade.StaticBody;
-
-    laserBody.x -= maxX;
-
-    this.spawnCoins();
-    this.coins.children.each((child) => {
-      const coin = child as Phaser.Physics.Arcade.Sprite;
-
-      if (!coin.active) {
-        return;
-      }
-
-      coin.x -= maxX;
-      const body = coin.body as Phaser.Physics.Arcade.StaticBody;
-
-      body.updateFromGameObject();
+  private spawnGems() {
+    this.gems.children.each((child) => {
+      const gem = child as Phaser.Physics.Arcade.Sprite;
+      this.coins.killAndHide(gem);
+      gem.body.enable = false;
     });
+
+    const scrollX = this.cameras.main.scrollX;
+    const rightEdge = scrollX + this.scale.width;
+
+    let x = rightEdge + 100;
+
+    const numGems = Phaser.Math.Between(1, 2);
+
+    for (let i = 0; i < numGems; i++) {
+      const gem = this.gems.get(
+        x,
+        // Phaser.Math.Between(100, this.scale.height - 100),
+        this.randomGemFormation(),
+        TextureKeys.Gem
+      ) as Phaser.Physics.Arcade.Sprite;
+
+      gem
+        .setVisible(true)
+        .setActive(true)
+        .play(AnimationKeys.Gem)
+        .setScale(2.5, 2.5);
+
+      const body = gem.body as Phaser.Physics.Arcade.StaticBody;
+      body.setCircle(body.width * 0.5);
+      body.enable = true;
+      body.updateFromGameObject();
+
+      x += gem.width * 3.5;
+    }
+  }
+
+  private handleCollectGem(
+    _obj1: Phaser.GameObjects.GameObject,
+    obj2: Phaser.GameObjects.GameObject
+  ) {
+    const gem = obj2 as Phaser.Physics.Arcade.Sprite;
+
+    this.score += 10;
+
+    this.scoreLabel.text = `${this.score}`;
+
+    this.gems.killAndHide(gem);
+
+    gem.body.enable = false;
   }
 }
