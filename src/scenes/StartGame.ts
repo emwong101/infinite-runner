@@ -27,5 +27,12 @@ export default class StartGame extends Phaser.Scene {
       this.scene.stop(SceneKeys.Game);
       this.scene.start(SceneKeys.Game);
     });
+
+    this.input.once("pointerdown", () => {
+      this.scene.stop(SceneKeys.GameStart);
+
+      this.scene.stop(SceneKeys.Game);
+      this.scene.start(SceneKeys.Game);
+    });
   }
 }

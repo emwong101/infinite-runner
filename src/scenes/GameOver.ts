@@ -80,14 +80,15 @@ export default class GameOver extends Phaser.Scene {
     this.add.text(
       title.x + title.width + 20,
       title.y,
-      "ENTER for global leaderboard"
+      "SPACE/TAP for global leaderboard"
     );
 
     this.input.keyboard.once("keydown-SPACE", () => {
       this.scene.stop(SceneKeys.GameOver);
-
       this.scene.stop(SceneKeys.Game);
-      this.scene.start(SceneKeys.Game);
+
+      this.scene.stop(SceneKeys.Leaderboard);
+      this.scene.start(SceneKeys.Leaderboard);
     });
 
     this.input.keyboard.once("keydown-ESC", () => {
@@ -95,6 +96,14 @@ export default class GameOver extends Phaser.Scene {
 
       this.scene.stop(SceneKeys.GameStart);
       this.scene.start(SceneKeys.GameStart);
+    });
+
+    this.input.once("pointerdown", () => {
+      this.scene.stop(SceneKeys.GameOver);
+      this.scene.stop(SceneKeys.Game);
+
+      this.scene.stop(SceneKeys.Leaderboard);
+      this.scene.start(SceneKeys.Leaderboard);
     });
 
     this.input.keyboard.once("keydown-ENTER", () => {
