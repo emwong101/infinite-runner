@@ -12,6 +12,7 @@ enum SpriteState {
 export default class RocketSprite extends Phaser.GameObjects.Container {
   private flames: Phaser.GameObjects.Sprite;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  private pointer: Phaser.Input.Pointer;
   private sprite: Phaser.GameObjects.Sprite;
   private SpriteState = SpriteState.Running;
 
@@ -44,6 +45,7 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
     body.setOffset(this.sprite.width * -0.2, -this.sprite.height + 35);
 
     this.cursors = scene.input.keyboard.createCursorKeys();
+    this.pointer = scene.input.activePointer;
   }
 
   preUpdate() {
@@ -51,7 +53,7 @@ export default class RocketSprite extends Phaser.GameObjects.Container {
 
     switch (this.SpriteState) {
       case SpriteState.Running: {
-        if (this.cursors.space?.isDown) {
+        if (this.cursors.space?.isDown || this.pointer.isDown) {
           this.sprite.play(AnimationKeys.SpriteFly, true);
           body.setAccelerationY(-600);
           this.enableJetpack(true);

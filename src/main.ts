@@ -19,10 +19,15 @@ const config: Phaser.Types.Core.GameConfig = {
     default: "arcade",
     arcade: {
       gravity: { y: 200 },
-      // debug: true,
     },
   },
-  dom: { createContainer: true },
+  scale: {
+    parent: "app",
+    mode: Phaser.Scale.FIT,
+    width: 940,
+    height: 640,
+    autoCenter: Phaser.Scale.NO_CENTER,
+  },
 
   scene: [Preloader, StartGame, Game, Leaderboard, GameOver],
 };

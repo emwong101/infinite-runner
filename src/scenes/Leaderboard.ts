@@ -63,9 +63,16 @@ export default class Leaderboard extends Phaser.Scene {
       y += 75;
     }
 
-    this.add.text(10, 610, "ESC to return to title, SPACE to restart");
+    this.add.text(10, 610, "ESC to return to title, SPACE/TAP to restart");
 
     this.input.keyboard.once("keydown-SPACE", () => {
+      this.scene.stop(SceneKeys.Leaderboard);
+
+      this.scene.stop(SceneKeys.Game);
+      this.scene.start(SceneKeys.Game);
+    });
+
+    this.input.once("pointerdown", () => {
       this.scene.stop(SceneKeys.Leaderboard);
 
       this.scene.stop(SceneKeys.Game);
